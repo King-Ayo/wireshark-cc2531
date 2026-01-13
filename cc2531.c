@@ -90,21 +90,22 @@ cc2531_open(void)
     char path[21] = "/dev/bus/usb/";  /* "/dev/bus/usb/XXX/YYY" */
     DIR *dir1 = opendir(path);
     if (dir1) {
-        struct dirent e, *r;
-        while (readdir_r(dir1, &e, &r) == 0 && r != NULL) {
-            if (strlen(e.d_name) == 3) {
-                path[13] = e.d_name[0];
-                path[14] = e.d_name[1];
-                path[15] = e.d_name[2];
+        struct dirent *entry1;
+        while ((entry1 = readdir(dir1)) != NULL) {
+            if (strlen(entry1->d_name) == 3) {
+                path[13] = entry1->d_name[0];
+                path[14] = entry1->d_name[1];
+                path[15] = entry1->d_name[2];
                 path[16] = '/';
                 path[17] = 0;
                 DIR *dir2 = opendir(path);
                 if (dir2) {
-                    while (readdir_r(dir2, &e, &r) == 0 && r != NULL) {
-                        if (strlen(e.d_name) == 3) {
-                            path[17] = e.d_name[0];
-                            path[18] = e.d_name[1];
-                            path[19] = e.d_name[2];
+                    struct dirent *entry2;
+                    while ((entry2 = readdir(dir2)) != NULL) {
+                        if (strlen(entry2->d_name) == 3) {
+                            path[17] = entry2->d_name[0];
+                            path[18] = entry2->d_name[1];
+                            path[19] = entry2->d_name[2];
                             int fd = open(path, O_RDWR);
                             if (fd >= 0) {
                                 char descriptor[sizeof(cc2531_usb_device_descriptor)];
